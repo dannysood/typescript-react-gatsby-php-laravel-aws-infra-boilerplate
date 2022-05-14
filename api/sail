@@ -1,0 +1,4 @@
+path=$(printf '%s\n' "${PWD}")
+command="exec ${path}/vendor/bin/sail "$@""
+echo "Running sail via ${path}/vendor/bin/sail"
+$command
