@@ -6,6 +6,11 @@
 	"recommendations": [
 		"vivaxy.vscode-conventional-commits",
 		"ms-vscode-remote.remote-containers",
+		"xdebug.php-debug",
+		"bmewburn.vscode-intelephense-client",
+		"onecentlin.laravel-extension-pack"
+
+
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": [
