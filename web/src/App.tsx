@@ -1,9 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 import { Sanctum } from "react-sanctum";
 import axios from "axios";
-import { LoginButton } from './components/LoginButton';
 const sanctumConfig = {
   // Your application URL
   apiUrl: "http://localhost:8080",
