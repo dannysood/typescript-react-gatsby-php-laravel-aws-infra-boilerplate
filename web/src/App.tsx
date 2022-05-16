@@ -1,8 +1,13 @@
 import React from 'react';
 import { Sanctum } from "react-sanctum";
 import axios from "axios";
+import { VechaiProvider } from "@vechaiui/react";
+import { theme } from './theme/defaultTheme';
+
+
 // https://laravel.com/docs/9.x/sanctum#cors-and-cookies
 axios.defaults.withCredentials = true;
+
 const sanctumConfig = {
   // Your application URL
   apiUrl: "http://localhost:80",
@@ -27,16 +32,14 @@ export const App = () => {
 
   return (
     <div className="App">
+      <VechaiProvider theme={theme} colorScheme="bee">
+        <Sanctum
+          // @ts-ignore
+          config={sanctumConfig}
+          checkOnInit={true}>
 
-      <Sanctum
-        // @ts-ignore
-        config={sanctumConfig}>
-        return (
-        <h1 className="text-3xl font-bold underline">
-          Hello world!
-        </h1>
-        )
-      </Sanctum>
+        </Sanctum>
+      </VechaiProvider>
     </div>
   );
 }
