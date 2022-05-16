@@ -6,8 +6,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { useSanctum } from "react-sanctum";
 import axios from 'axios';
+import {DateTime} from "luxon";
 
-interface IActiveToken { id: number, tokenableId: number, name: string, createdAt: string, lastUsedAt: string };
+interface IActiveToken { id: number, tokenableId: number, name: string, createdAt: DateTime, lastUsedAt: DateTime|undefined, validTill: DateTime, status: "active"|"expired" };
 
 export const Dashboard = () => {
     const { user, signOut } = useSanctum();
@@ -18,9 +19,16 @@ export const Dashboard = () => {
         await axios.get("http://localhost/sanctum/csrf-cookie");
         const result = await axios.get("http://localhost/api/tokens", { headers: { "Content-Type": "application/json" } })
         setTokensList(result.data.active_tokens.map((activeToken: any) => {
-            const activeTokenProcessed: IActiveToken = { id: activeToken.id, createdAt: activeToken.created_at, lastUsedAt: activeToken.last_used_at, name: activeToken.name, tokenableId: activeToken.tokenable_id };
+                const createdAt = DateTime.fromISO(activeToken.created_at);
+                const validTill = DateTime.fromISO(activeToken.created_at).plus({minutes: 15});
+            const activeTokenProcessed: IActiveToken = { id: activeToken.id, createdAt: createdAt, lastUsedAt: activeToken.last_used_at ? DateTime.fromISO(activeToken.last_used_at) : undefined, name: activeToken.name, tokenableId: activeToken.tokenable_id, validTill: validTill, status: validTill < DateTime.now() ? "expired" : "active" };
             return activeTokenProcessed;
         }));
+    }
+    const deleteTokenToken = async (id: number) => {
+        await axios.get("http://localhost/sanctum/csrf-cookie");
+        await axios.delete(`http://localhost/api/token/${id}`, { headers: { "Content-Type": "application/json" } })
+        await getActiveTokens();
     }
     useEffect(() => { getActiveTokens() }, []);
     // @ts-ignore
@@ -50,7 +58,10 @@ export const Dashboard = () => {
             <th className="border border-slate-600">Id</th>
             <th className="border border-slate-600">Name</th>
             <th className="border border-slate-600">Created At</th>
+            <th className="border border-slate-600">Valid Till</th>
             <th className="border border-slate-600">Last Used At</th>
+            <th className="border border-slate-600">Status</th>
+            <th className="border border-slate-600">Actions</th>
     </tr>
             {tokensList.map((token) =>
                 (<tr>
@@ -61,10 +72,19 @@ export const Dashboard = () => {
                         {token.name}
                     </td>
                     <td className="border border-slate-700">
-                        {token.createdAt}
+                        {token.createdAt.toLocaleString(DateTime.DATETIME_FULL)}
                     </td>
                     <td className="border border-slate-700">
-                        {token.lastUsedAt}
+                        {token.validTill.toLocaleString(DateTime.DATETIME_FULL)}
+                    </td>
+                    <td className="border border-slate-700">
+                        {token.lastUsedAt?.toLocaleString(DateTime.DATETIME_FULL)}
+                    </td>
+                    <td className="border border-slate-700">
+                        {token.status}
+                    </td>
+                    <td className="border border-slate-700">
+                    <Button type="button" size="xs" variant="solid" onClick={() => deleteTokenToken(token.id)}>Delete</Button>
                     </td>
                 </tr>))}
             </table>

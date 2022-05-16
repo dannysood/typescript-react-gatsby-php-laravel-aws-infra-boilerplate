@@ -38,5 +38,12 @@ Route::middleware('auth:sanctum')->group(
 
             return ['active_tokens' => $tokens];
         });
+
+        Route::delete('/token/{id}', function (Request $request, $id) {
+
+            $request->user()->tokens()->where('id', $id)->delete();
+
+            return [];
+        })->whereNumber('id');
     }
 );
