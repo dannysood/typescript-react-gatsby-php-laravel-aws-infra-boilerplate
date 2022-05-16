@@ -22,5 +22,21 @@ Route::middleware('auth:sanctum')->group(
         Route::get('/user/profile', function (Request $request) {
             return $request->user();
         });
+        Route::post('/tokens/create', function (Request $request) {
+            if($request->json()->all()["token_type"] == "checkout"){
+                $token = $request->user()->createToken("checkout", [['payments:create']]);
+            } else {
+                $token = $request->user()->createToken("transaction", [['payments:read']]);
+            }
+
+
+            return ['token' => $token->plainTextToken];
+        });
+        Route::get('/tokens', function (Request $request) {
+
+            $tokens = $request->user()->tokens()->get();
+
+            return ['active_tokens' => $tokens];
+        });
     }
 );
