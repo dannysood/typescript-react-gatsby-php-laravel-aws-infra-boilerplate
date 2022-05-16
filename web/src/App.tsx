@@ -33,7 +33,7 @@ export const App = () => {
 
   return (
     <div className="App">
-      <VechaiProvider theme={theme} colorScheme="bee">
+      <VechaiProvider theme={theme} colorScheme="midnight">
         <Sanctum
           // @ts-ignore
           config={sanctumConfig}
