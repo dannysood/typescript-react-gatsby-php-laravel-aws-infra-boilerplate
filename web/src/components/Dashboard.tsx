@@ -18,7 +18,7 @@ export const Dashboard = () => {
     const getActiveTokens = async () => {
         await axios.get("http://localhost/sanctum/csrf-cookie");
         const result = await axios.get("http://localhost/api/tokens", { headers: { "Content-Type": "application/json" } })
-        setTokensList(result.data.active_tokens.map((activeToken: any) => {
+        setTokensList(result.data.active_tokens.reverse().map((activeToken: any) => {
                 const createdAt = DateTime.fromISO(activeToken.created_at);
                 const validTill = DateTime.fromISO(activeToken.created_at).plus({minutes: 5});
             const activeTokenProcessed: IActiveToken = { id: activeToken.id, createdAt: createdAt, lastUsedAt: activeToken.last_used_at ? DateTime.fromISO(activeToken.last_used_at) : undefined, name: activeToken.name, tokenableId: activeToken.tokenable_id, validTill: validTill, status: validTill < DateTime.now() ? "expired" : "active" };
