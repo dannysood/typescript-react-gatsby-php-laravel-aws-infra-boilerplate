@@ -3,6 +3,7 @@ import { Sanctum } from "react-sanctum";
 import axios from "axios";
 import { VechaiProvider } from "@vechaiui/react";
 import { theme } from './theme/defaultTheme';
+import { MainRouter } from './router';
 
 
 // https://laravel.com/docs/9.x/sanctum#cors-and-cookies
@@ -37,17 +38,10 @@ export const App = () => {
           // @ts-ignore
           config={sanctumConfig}
           checkOnInit={true}>
+          <MainRouter/>
 
         </Sanctum>
       </VechaiProvider>
     </div>
   );
 }
-
-
-
-
-
-
-
-

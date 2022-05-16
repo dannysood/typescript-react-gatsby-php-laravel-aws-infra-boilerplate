@@ -17,6 +17,10 @@ Route::post('/', function (Request $request) {
     return "Successful Response With No Middleware";
 });
 
-Route::middleware('auth:sanctum')->get('/users/{user}', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:sanctum')->group(
+    function() {
+        Route::get('/user/profile', function (Request $request) {
+            return $request->user();
+        });
+    }
+);
