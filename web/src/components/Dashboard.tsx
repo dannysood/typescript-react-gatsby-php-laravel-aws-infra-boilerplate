@@ -12,6 +12,8 @@ interface IActiveToken { id: number, tokenableId: number, name: string, createdA
 
 export const Dashboard = () => {
     const { user, signOut } = useSanctum();
+    const [activeToken, setActiveToken] = useState("");
+    const [activeTokenMessage, setActiveTokenMessage] = useState("");
     const [transactionToken, setTransactionToken] = useState("");
     const [checkoutToken, setCheckoutToken] = useState("");
     const [tokensList, setTokensList] = useState<IActiveToken[]>([]);
@@ -34,9 +36,23 @@ export const Dashboard = () => {
     // @ts-ignore
     const createToken = async (typeOfToken: string, setToken: React.Dispatch<React.SetStateAction<string>>) => {
         await axios.get("http://localhost/sanctum/csrf-cookie");
-        const result = await axios.post("http://localhost/api/tokens/create", { "token_type": typeOfToken }, { headers: { "Content-Type": "application/json" } })
+        const result = await axios.post("http://localhost/api/tokens", { "token_type": typeOfToken }, { headers: { "Content-Type": "application/json" } })
         setToken(result.data.token);
+        setActiveToken(result.data.token);
         await getActiveTokens();
+    }
+
+    const getCheckoutUrlFromToken = async () => {
+        try {
+            await axios.get("http://localhost/sanctum/csrf-cookie");
+            const result = await axios.post("http://localhost/api/checkout", {}, { headers: { "Content-Type": "application/json", "Authorization": `Bearer ${activeToken}` } })
+            setActiveTokenMessage(result.data.url);
+        } catch($e) {
+            setActiveTokenMessage("failed");
+        }
+
+
+
     }
     return (
 
@@ -52,7 +68,13 @@ export const Dashboard = () => {
             {transactionToken != "" ? <p>Your Transaction Token Is: {transactionToken}</p> : <p></p>}
             <br />
             <br />
-            <h1>Active Tokens</h1>
+            <h1>Active Token</h1>
+            <p>{activeToken}</p>
+            <Button type="button" size="xs" variant="solid" onClick={getCheckoutUrlFromToken}>Fetch Checkout Url From Active Token</Button>
+            {activeTokenMessage}
+            <br />
+            <br />
+            <h1>Tokens List</h1>
             <table className="border-collapse border border-slate-500">
             <tr>
             <th className="border border-slate-600">Id</th>

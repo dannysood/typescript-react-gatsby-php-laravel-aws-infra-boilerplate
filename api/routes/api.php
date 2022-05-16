@@ -13,20 +13,17 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('/', function (Request $request) {
-    return "Successful Response With No Middleware";
-});
 
 Route::middleware('auth:sanctum')->group(
-    function() {
+    function () {
         Route::get('/user/profile', function (Request $request) {
             return $request->user();
         });
-        Route::post('/tokens/create', function (Request $request) {
-            if($request->json()->all()["token_type"] == "checkout"){
-                $token = $request->user()->createToken("checkout", [['payments:create']]);
+        Route::post('/tokens', function (Request $request) {
+            if ($request->json()->all()['token_type'] == 'checkout') {
+                $token = $request->user()->createToken('checkout', ['payments-create']);
             } else {
-                $token = $request->user()->createToken("transaction", [['payments:read']]);
+                $token = $request->user()->createToken('transaction', ['payments-read']);
             }
 
 
@@ -45,5 +42,19 @@ Route::middleware('auth:sanctum')->group(
 
             return [];
         })->whereNumber('id');
+    }
+);
+Route::middleware(['auth:sanctum','ability:payments-create'])->group(
+    function () {
+        Route::post('/checkout', function (Request $request) {
+            return ['url' => 'http://localhost/checkout'];
+        });
+    }
+);
+Route::middleware(['auth:sanctum','ability:payments-read'])->group(
+    function () {
+        Route::get('/transactions', function (Request $request) {
+            return ['transactions' => []];
+        });
     }
 );
