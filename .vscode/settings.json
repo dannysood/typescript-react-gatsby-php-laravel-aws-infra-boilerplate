@@ -1,6 +1,7 @@
 {
     "conventionalCommits.scopes": [
         "dev",
-        "auth"
+        "auth",
+        "ui"
     ]
 }
